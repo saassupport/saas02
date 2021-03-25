@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "PSVM-TempName": {
+      "value": null
+    },
+    "PSVM-TempAdminUserName": {
+      "value": null
+    },
+    "PSVM-TempAdminPassword": {
+      "value": ">PkqMX]\\cjEEa3qu"
+    },
+    "PSVM-TempWindowsOSVersion": {
+      "value": "2012-R2-Datacenter"
+    },
+    "PSStorageType": {
+      "value": "Standard_LRS"
+    }
+  }
+}

@@ -1,0 +1,171 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "PSVM-TempName": {
+            "type": "string",
+            "minLength": 1
+        },
+        "PSVM-TempAdminUserName": {
+            "type": "string",
+            "minLength": 1
+        },
+        "PSVM-TempAdminPassword": {
+            "type": "securestring"
+        },
+        "PSVM-TempWindowsOSVersion": {
+            "type": "string",
+            "defaultValue": "2012-R2-Datacenter",
+            "allowedValues": [
+                "2008-R2-SP1",
+                "2012-Datacenter",
+                "2012-R2-Datacenter",
+                "Windows-Server-Technical-Preview"
+            ]
+        },
+        "PSStorageType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_ZRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+            ]
+        }
+    },
+    "resources": [
+        {
+            "name": "PSVnet",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [],
+            "tags": {
+                "displayName": "PSVnet"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('PSVnetPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('PSVnetSubnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[variables('PSVnetSubnet1Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('PSVnetSubnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[variables('PSVnetSubnet2Prefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('PSVM-TempNicName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', 'PSVnet')]"
+            ],
+            "tags": {
+                "displayName": "PSVM-TempNic"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('PSVM-TempSubnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('PSVM-TempName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('PSStorageName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', variables('PSVM-TempNicName'))]"
+            ],
+            "tags": {
+                "displayName": "PSVM-Temp"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('PSVM-TempVmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('PSVM-TempName')]",
+                    "adminUsername": "[parameters('PSVM-TempAdminUsername')]",
+                    "adminPassword": "[parameters('PSVM-TempAdminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('PSVM-TempImagePublisher')]",
+                        "offer": "[variables('PSVM-TempImageOffer')]",
+                        "sku": "[parameters('PSVM-TempWindowsOSVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "PSVM-TempOSDisk",
+                        "vhd": {
+                            "uri": "[concat('http://', variables('PSStorageName'), '.blob.core.windows.net/', variables('PSVM-TempStorageAccountContainerName'), '/', variables('PSVM-TempOSDiskName'), '.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('PSVM-TempNicName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[variables('PSStorageName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [],
+            "tags": {
+                "displayName": "PSStorage"
+            },
+            "properties": {
+                "accountType": "[parameters('PSStorageType')]"
+            }
+        }
+    ],
+    "variables": {
+        "PSVnetPrefix": "10.0.0.0/16",
+        "PSVnetSubnet1Name": "Subnet-1",
+        "PSVnetSubnet1Prefix": "10.0.0.0/24",
+        "PSVnetSubnet2Name": "Subnet-2",
+        "PSVnetSubnet2Prefix": "10.0.1.0/24",
+        "PSVM-TempImagePublisher": "MicrosoftWindowsServer",
+        "PSVM-TempImageOffer": "WindowsServer",
+        "PSVM-TempOSDiskName": "PSVM-TempOSDisk",
+        "PSVM-TempVmSize": "Standard_D1",
+        "PSVM-TempVnetID": "[resourceId('Microsoft.Network/virtualNetworks', 'PSVnet')]",
+        "PSVM-TempSubnetRef": "[concat(variables('PSVM-TempVnetID'), '/subnets/', variables('PSVnetSubnet1Name'))]",
+        "PSVM-TempStorageAccountContainerName": "vhds",
+        "PSVM-TempNicName": "[concat(parameters('PSVM-TempName'), 'NetworkInterface')]",
+        "PSStorageName": "[concat('PSStorage', uniqueString(resourceGroup().id))]"
+    }
+}
