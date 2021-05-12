@@ -13,3 +13,18 @@ azure deployments
 
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/)
+
+
+https://github.com/saassupport/saas02.git/WindowsVMtemplate.json
+
+
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fazure-quickstart-templates%2Fmaster%2F101-storage-account-create%2Fazuredeploy.json" target="_blank">
+  <img src="https://aka.ms/deploytoazurebutton"/>
+</a>
+
+
+
+<a href="https://portal.azure.com/?repository=https://github.com/saassupport/saas02.git/WindowsVMtemplate.json" target="_blank">
+  <img src="https://aka.ms/deploytoazurebutton"/>
+</a>
