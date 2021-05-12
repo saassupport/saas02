@@ -4,7 +4,11 @@
   <img src="https://aka.ms/deploytoazurebutton"/>
 </a>
 
+# with raw.githubusercontent.com
 
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsaassupport%2Fsaas02%2FWindowsVMparametersFile.json" target="_blank">
+  <img src="https://aka.ms/deploytoazurebutton"/>
+</a>
 
 # saas02
 azure deployments
