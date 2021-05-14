@@ -1,6 +1,7 @@
-# click for test 
+# click for test updated
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fgithub.com%2Fsaassupport%2Fsaas02%2FWindowsVMparametersFile.json" target="_blank">
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsaassupport%2Fsaas02%2Fmain%2FQRT-API-DR%2FWindowsVMparametersFile.json" rel="nofollow">
   <img src="https://aka.ms/deploytoazurebutton"/>
 </a>
 
